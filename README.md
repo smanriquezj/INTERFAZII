@@ -1,5 +1,5 @@
-### INTERFAZII
-# Ejercicio1
+# INTERFAZII
+### Ejercicio1
 ```js
 void setup() {
   Serial.begin(9600); // Inicia la comunicación serie a 9600 bps
