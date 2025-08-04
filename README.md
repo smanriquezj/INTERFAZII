@@ -1,8 +1,9 @@
 ### INTERFAZII
 # Ejercicio1
+```js
 void setup() {
   Serial.begin(9600); // Inicia la comunicación serie a 9600 bps
-  Serial.println("Hola, Mamahuevas!"); // Envía "Hola, Mundo!" al monitor serie
+  Serial.println("Hola, quiero dormir"); // Envía "Hola, Mundo!" al monitor serie
 }
 
 void loop() {
