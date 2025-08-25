@@ -56,7 +56,7 @@ void loop() {
   analogWrite(9, brillo);               // Ajustar brillo
 }
 ```
-### Ej n5: Semáforo
+### Ej n5: Semáforo 25/08
 ```js
 int LED_1 = 6;  // Luz roja autos
 int LED_2 = 7;  // Luz amarilla autos
