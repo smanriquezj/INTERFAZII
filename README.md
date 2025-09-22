@@ -101,6 +101,5 @@ void loop() {
  // delay(2000); // 2 segundos}
 ```
 
-###Ej Semaforo con parpadeo 
-}
+###Ej n6: Semáforo con parpadeo 
 ```
