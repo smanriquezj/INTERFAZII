@@ -107,7 +107,7 @@ void loop() {
  //  digitalWrite(LED_5, HIGH);  // Rojo peatones encendido
  // delay(2000); // 2 segundos}
 ```
-<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/led%20con%20potenciometro.png">
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/semaforo.png">
 
 # Arduino/Processing
 
