@@ -438,9 +438,9 @@ void setup() {
 }
 
 void draw() {
-  background(0); // Fondo negro
-  fill(255);     // Color blanco para el texto
-  textSize(16);  // Tamaño del texto
+  background(255); // Fondo negro
+  fill(10);     // Color blanco para el texto
+  textSize(20);  // Tamaño del texto
   
   // Mostramos en pantalla qué botón está activo
   text("Botón actual: " + (currentTrack == -1 ? "ninguno" : currentTrack), 20, 40);
