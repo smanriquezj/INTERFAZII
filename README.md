@@ -29,6 +29,7 @@ void loop() {   // Se repite infinitamente
   delay(90);  
 }
 ```
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/Leds%20parpadeantes.png"/>
 ### Ej n3: Control con pulsador
 Objetivo: Encender un LED solo al presionar un botón. Circuito: Pulsador en pin 2 (con resistencia pull-down de 10k Ω). LED en pin 13.
 ```js
