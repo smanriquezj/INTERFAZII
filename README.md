@@ -100,7 +100,8 @@ void loop() {
  //  digitalWrite(LED_5, HIGH);  // Rojo peatones encendido
  // delay(2000); // 2 segundos}
 ```
-##Arduino/Processing
+Arduino/Processing
+
 ###Ej n6: Elipse Interactiva 
 #### Código Arduino
 ```js
