@@ -30,6 +30,7 @@ void loop() {   // Se repite infinitamente
 }
 ```
 <img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/Leds%20parpadeantes.png"/>
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/led%20parpadeante%20fis.jpeg">
 
 ### Ej n3: Control con pulsador
 Objetivo: Encender un LED solo al presionar un botón. Circuito: Pulsador en pin 2 (con resistencia pull-down de 10k Ω). LED en pin 13.
@@ -108,6 +109,7 @@ void loop() {
  // delay(2000); // 2 segundos}
 ```
 <img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/semaforo.png">
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/semaforo%20fis.jpeg">
 
 # Arduino/Processing
 
