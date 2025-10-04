@@ -275,8 +275,8 @@ void draw() {
   // Dibujar todos los círculos guardados
   //fill(0, 150, 255);
   //noStroke();
-  fill(0, 0, 0);
-  stroke(255, 0, 0);
+  fill(73, 187, 221);
+  stroke(203, 40, 19);
   for (CircleData c : circles) {
     ellipse(c.x, c.y, c.size, c.size);
   }
