@@ -206,11 +206,11 @@ void draw() {
   //background(0);
   
   // Dibujar círculos almacenados
-  fill(0, 0, 0);
+  fill(40, 120, 250);
   //noStroke();
-  stroke(255, 0, 0);
+  stroke(255, 20, 48);
   for (PVector c : circles) {
-    ellipse(c.x, c.y, 30, 30);
+    ellipse(c.x, c.y, 100, 10);
   }
   
   // Revisar si llega algo de Arduino
