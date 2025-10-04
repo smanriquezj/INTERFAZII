@@ -58,6 +58,8 @@ void loop() {
   analogWrite(9, brillo);               // Ajustar brillo
 }
 ```
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/led%20con%20potenciometro.png">
+
 ### Ej n5: Semáforo 25/08
 ```js
 int LED_1 = 6;  // Luz roja autos
@@ -102,6 +104,8 @@ void loop() {
  //  digitalWrite(LED_5, HIGH);  // Rojo peatones encendido
  // delay(2000); // 2 segundos}
 ```
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/led%20con%20potenciometro.png">
+
 # Arduino/Processing
 
 ### Ej n6: Elipse Interactiva 
@@ -185,6 +189,8 @@ void loop() {
   }
 }
 ```
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/led%20con%20boton.png">
+
 #### Código Processing
 ```js
 import processing.serial.*;
@@ -335,6 +341,8 @@ void loop() {
   delay(500); // medio segundo entre lecturas
 }
 ```
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/If%20else.png">
+
 ### Ej n10: Botonera + Audio
 
 #### Código Arduino
@@ -406,6 +414,8 @@ void loop() {
   delay(10);
 }
 ```
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/botonera%20con%20sonido.png">
+
 #### Código Processing
 ```js
 // Importamos librería para comunicación serial
