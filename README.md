@@ -46,6 +46,9 @@ void loop() {
   }
 }
 ```
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/led%20con%20boton.png">
+
+
 ### Ej n4: LED con potenciómetro
 Objetivo: Regular brillo de un LED con un potenciómetro. Circuito: Potenciómetro: Patas extremas a +5V y GND, central a pin A0. LED en pin 9 (con resistencia 220 Ω).
 ```js
@@ -189,7 +192,6 @@ void loop() {
   }
 }
 ```
-<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/led%20con%20boton.png">
 
 #### Código Processing
 ```js
