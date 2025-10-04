@@ -417,6 +417,7 @@ void loop() {
 }
 ```
 <img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/botonera%20con%20sonido.png">
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/botonera%20fis.png">
 
 #### Código Processing
 ```js
