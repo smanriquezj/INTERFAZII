@@ -206,9 +206,9 @@ void draw() {
   //background(0);
   
   // Dibujar círculos almacenados
-  fill(40, 120, 250);
+  fill(55, 105, 151);
   //noStroke();
-  stroke(255, 20, 48);
+  stroke(25, 200, 78);
   for (PVector c : circles) {
     ellipse(c.x, c.y, 100, 10);
   }
