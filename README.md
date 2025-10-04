@@ -101,9 +101,7 @@ void loop() {
  // delay(2000); // 2 segundos}
 ```
 ##Arduino/Processing
-
 ###Ej n6: Elipse Interactiva 
-
 #### Código Arduino
 ```js
 unsigned int ADCValue;
