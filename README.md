@@ -337,7 +337,6 @@ void loop() {
 
 #### Código Arduino
 ```js
-// --- Configuración de botones ---
 const int numButtons = 3;
 const int buttonPins[numButtons] = {2, 4, 7};
 const int ledButtonPins[numButtons] = {9, 10, 11}; // LEDs botones
