@@ -172,6 +172,7 @@ void draw()
   ellipse(width/2, height/2, d, d);   
 } 
 ```
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/circulo.png">
 
 ### Ej n7: Arduino + Botón + Processing
 
