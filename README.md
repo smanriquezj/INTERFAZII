@@ -129,6 +129,8 @@ void loop() {
 delay(50);
 }
 ```
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/procesing%20fis.jpeg">
+
 #### Código Processing
 ```js
 import processing.serial.*;
