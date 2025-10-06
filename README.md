@@ -536,4 +536,4 @@ void loop() {
   }
 }
 ```
-<img src= "
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/4ledsparpadeantes.jpeg"> 
