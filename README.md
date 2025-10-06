@@ -506,8 +506,7 @@ void playTrack(int index) {
   currentTrack = index;
 }
 ```
-### Ejercicio nota 1 presentación
-### 4 leds parpadeantes
+### Ejercicio nota 1: 4 leds intermitentes
 ```js
 int leds[] = {2, 3, 4, 5}; // Creamos un arreglo con los pines donde van conectados los LEDs
 
@@ -537,3 +536,4 @@ void loop() {
 }
 ```
 <img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/4ledsparpadeantes.jpeg"> 
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/4leds.png">
