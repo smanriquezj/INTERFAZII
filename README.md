@@ -533,6 +533,73 @@ void loop() {
 
     // Espera 0,5 segundos antes de pasar al siguiente
   }
+
+
+```js
+import processing.serial.*;
+
+
+Serial myPort;
+PImage[] imgs;
+int numImages = 3;
+PImage avgImg;
+float mixAmount = 0;
+
+void setup() {
+  size(770, 700);
+  println(Serial.list());
+  
+  //Cambia el índice según tu puerto (0, 1, 2, etc.)
+  myPort = new Serial(this, Serial.list()[0], 9600);
+  //myPort = new Serial(this, "/dev/cu.usbmodem1101", 9600);
+  myPort.bufferUntil('\n');
+
+  // Cargar imágenes
+  imgs = new PImage[numImages];
+  imgs[0] = loadImage("img1.png");
+  imgs[1] = loadImage("img2.png");
+  imgs[2] = loadImage("img3.png");
+
+  avgImg = createImage(imgs[0].width, imgs[0].height, RGB);
+}
+
+void draw() {
+  // Dibujar la imagen promedio según el valor del potenciómetro
+  background(0);
+  calcAverage(mixAmount);
+  image(avgImg, 0, 0, width, height);
+  
+  fill(255);
+  textSize(20);
+  text("Mezcla: " + nf(mixAmount, 1, 2), 20, height - 20);
+}
+
+void serialEvent(Serial p) {
+  String val = p.readStringUntil('\n');
+  if (val != null) {
+    val = trim(val);
+    float sensor = float(val);
+    mixAmount = map(sensor, 0, 1023, 0, 1); // 0 a 1
+  }
+}
+
+void calcAverage(float t) {
+  avgImg.loadPixels();
+
+  for (int i = 0; i < avgImg.pixels.length; i++) {
+    color c1 = imgs[0].pixels[i];
+    color c2 = imgs[1].pixels[i];
+    color c3 = imgs[2].pixels[i];
+
+    // Promedio ponderado según el potenciómetro
+    float r = red(c1)*(1-t) + red(c2)*t*0.5 + red(c3)*t*0.5;
+    float g = green(c1)*(1-t) + green(c2)*t*0.5 + green(c3)*t*0.5;
+    float b = blue(c1)*(1-t) + blue(c2)*t*0.5 + blue(c3)*t*0.5;
+
+    avgImg.pixels[i] = color(r, g, b);
+  }
+  avgImg.updatePixels();
+}
 }
 ```
 <img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/4ledsparpadeantes.jpeg"> 
