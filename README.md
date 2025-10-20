@@ -535,6 +535,11 @@ void loop() {
   }
 
 
+
+```
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/4ledsparpadeantes.jpeg"> 
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/4leds.png">
+
 ```js
 import processing.serial.*;
 
@@ -602,5 +607,3 @@ void calcAverage(float t) {
 }
 }
 ```
-<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/4ledsparpadeantes.jpeg"> 
-<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/4leds.png">
