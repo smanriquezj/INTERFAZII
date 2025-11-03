@@ -608,6 +608,10 @@ void calcAverage(float t) {
 }
 ```
 ### Ejercicio nota 2: Sensor de proximidad
+Nuestro trabajo trata del tránsito por el espacio, un espacio que remite a lo urbano pero se ve alterado e incómodo, utilizando una serie de imagenes en blanco y negro que cambian a medida que el espectador se acerca, por medio de un sensor de proximidad. 
+Nuestro trabajo es intercativo, permitiendo que el expectador sea participe de la obra y quien configure los espacios en cuanto a orden y duración.
+También nos basamos en Edward Hopper, en la forma como se utilizan los espacios y cómo el espectador se presenta ante estos.
+
 #### Arduino
 ```js
 // Pines del sensor ultrasónico HC-SR04
@@ -831,10 +835,6 @@ PImage[] loadImagesFromFolder(String folderName) {
 ```
 <img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/sensor%20proximidad.jpg">
 
-Nuestro trabajo trata del tránsito por el espacio, un espacio que remite a lo urbano pero se ve alterado e incómodo, utilizando una serie de imagenes en blanco y negro que cambian a medida que el espectador se acerca, por medio de un sensor de proximidad. 
-Nuestro trabajo es intercativo, permitiendo que el expectador sea participe de la obra y quien configure los espacios en cuanto a orden y duración.
-También nos basamos en Edward Hopper, en la forma como se utilizan los espacios y cómo el espectador se presenta ante estos.
-
 #### Pront a Gemini
 estoy haciendo un trabajo usando arduino y processing, donde quiero projectar imagenes en processing y que vayan cambiando con un sensor de proximidad conectado a arduino: un codigo de procesing parecido a este: // --- Librerías necesarias ---
 // Importa la librería de comunicación serial para conectar con Arduino
@@ -1004,7 +1004,7 @@ PImage[] loadImagesFromFolder(String folderName) {
   // Convierte la ArrayList a un arreglo PImage[] y lo retorna
   return loaded.toArray(new PImage[loaded.size()]);
 }
-#### respuesta
+#### Respuesta
 ¡Genial! Entiendo que estás adaptando este código de Processing para usar un sensor de proximidad con Arduino en lugar del potenciómetro, con el objetivo de cambiar las imágenes proyectadas.
 Para hacer este cambio, necesitas modificar tanto el código de Arduino como el código de Processing.
 Aquí tienes el código de Arduino necesario y las modificaciones clave en el código de Processing:
