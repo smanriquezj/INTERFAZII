@@ -751,3 +751,4 @@ boolean overCircle(int x, int y, int diameter) {
   }
 }
 ```
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/sensor%20proximidad.jpg">
