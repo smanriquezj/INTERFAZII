@@ -663,92 +663,170 @@ void loop() {
 ```
 ### Processing
 ```js
-int rectX, rectY;      // Position of square button
-int circleX, circleY;  // Position of circle button
-int rectSize = 30;     // Diameter of rect
-int circleSize = 30;   // Diameter of circle
-color rectColor, circleColor, baseColor;
-color rectHighlight, circleHighlight;
-color currentColor;
-boolean rectOver = false;
-boolean circleOver = false;
-PImage img; // Declare variable 'img'.
+// Importa la librería de comunicación serial para conectar con Arduino
+import processing.serial.*;
+// Importa la clase File de Java para listar archivos y carpetas
+import java.io.File;
 
+// --- Comunicación serial con Arduino ---
+// Variable que contendrá el objeto de puerto serial (conexión con Arduino)
+Serial myPort;
+// Variable que guarda el valor leído del potenciómetro (0..1023)
+float potValue = 0;
+
+// --- Variables de imágenes ---
+// Arreglo dinámico que contendrá todas las imágenes cargadas desde la carpeta
+PImage[] imgs;
+// Imagen donde se almacenará el resultado del promedio/interpolación
+PImage avgImg;
+
+// --- Configuración inicial ---
 void setup() {
-  size(700, 525);
-  img = loadImage("base.jpeg");
-  rectColor = color(0); //color cuadrado boton
-  rectHighlight = color(51); //Color de cuadrado apretado
-  circleColor = color(255); //lo mismo circulo
-  circleHighlight = color(204); // lo mismo circulo
-  //baseColor = color(102);
-  //currentColor = baseColor;
-  circleX = width/2+circleSize/2+150;// posicion circulo X
-  circleY = height/2;
-  rectX = width/2-rectSize-180;
-  rectY = height/2-rectSize/2+20;
-  ellipseMode(CENTER);
+  // Define el tamaño de la ventana de Processing (ancho, alto)
+  size(745, 700);
+  
+  // Cargar imágenes desde carpeta "data/imagenes"
+  // Llama a la función que busca todas las imágenes dentro de esa carpeta
+  imgs = loadImagesFromFolder("imagenes");
+  // Imprime en la consola cuántas imágenes se cargaron (útil para debug)
+  println("Imágenes cargadas: " + imgs.length);
+  
+  // Redimensionar todas las imágenes al tamaño del lienzo para que coincidan pixel a pixel
+  for (int i = 0; i < imgs.length; i++) {
+    imgs[i].resize(width, height); // redimensiona cada imagen al ancho y alto de la ventana
+  }
+  
+  // Crea una imagen vacía del tamaño del lienzo donde guardaremos el promedio
+  avgImg = createImage(width, height, RGB);
+  
+  // Conectar con Arduino (ver lista de puertos)
+  // Muestra en consola la lista de puertos seriales disponibles (para identificar cuál usar)
+  printArray(Serial.list());
+  // Alternativa automática (comentada): abrir el primer puerto disponible a 9600 baudios
+  myPort = new Serial(this, Serial.list()[0], 9600);
+  
 }
 
+// --- Bucle principal ---
+// draw() se ejecuta continuamente (aprox. 60 veces por segundo)
 void draw() {
-  update(mouseX, mouseY);
-  background(img);
-
-  if (rectOver) {
-    fill(rectHighlight);
-  } else {
-    fill(rectColor);
-  }
-  stroke(255);
-  rect(rectX, rectY, rectSize, rectSize);
-
-  if (circleOver) {
-    fill(circleHighlight);
-  } else {
-    fill(circleColor);
-  }
-  stroke(0);
-  ellipse(circleX, circleY, circleSize, circleSize);
+  // Pinta el fondo de negro en cada frame
+  background(0);
+  // Llama a la función que lee datos desde el puerto serial (actualiza potValue)
+  readSerial();
+  
+  // Si no hay imágenes o sólo hay una, no hacemos nada (necesitamos al menos 2 para interpolar)
+  if (imgs == null || imgs.length < 2) return;
+  
+  // Mapear el valor del potenciómetro (0..1023) al rango de índices entre 0 y imgs.length-1
+  // Esto permite moverse a lo largo de la secuencia de imágenes
+  float mixValue = map(potValue, 0, 1023, 0, imgs.length - 1);
+  
+  // Calcular el promedio/interpolación entre las dos imágenes vecinas según mixValue
+  avgImagesWeighted(mixValue);
+  
+  // Mostrar la imagen promedio resultante en la pantalla, en la posición (0,0)
+  image(avgImg, 0, 0);
+  
+  // Mostrar texto con el valor actual del potenciómetro en la esquina inferior izquierda
+  fill(255); // color blanco para el texto
+  text("Valor pot: " + nf(potValue, 1, 0), 10, height - 10); // nf para formatear el número
 }
 
-void update(int x, int y) {
-  if ( overCircle(circleX, circleY, circleSize) ) {
-    circleOver = true;
-    rectOver = false;
-  } else if ( overRect(rectX, rectY, rectSize, rectSize) ) {
-    rectOver = true;
-    circleOver = false;
-  } else {
-    circleOver = rectOver = false;
+// --- Función que calcula el promedio ponderado entre imágenes ---
+// mix es un valor flotante que indica la posición entre imágenes (ej. 2.3 -> entre img2 e img3)
+void avgImagesWeighted(float mix) {
+  // Accede al arreglo de píxeles de avgImg para poder modificarlos directamente
+  avgImg.loadPixels();
+  
+  // Asegura que mix esté dentro del rango válido [0, imgs.length - 1]
+  mix = constrain(mix, 0, imgs.length - 1);
+  
+  // i1 es el índice de la imagen "inferior" (por ejemplo 2 en 2.3)
+  int i1 = floor(mix);
+  // i2 es la imagen siguiente (i1 + 1), pero sin pasarse del último índice
+  int i2 = min(i1 + 1, imgs.length - 1);
+  // t es la fracción entre i1 e i2 (por ejemplo, 0.3 si mix es 2.3)
+  float t = mix - i1;
+  
+  // Cargar los píxeles de las dos imágenes que vamos a mezclar
+  imgs[i1].loadPixels();
+  imgs[i2].loadPixels();
+  
+  // Recorre todos los píxeles de la imagen objetivo
+  for (int i = 0; i < avgImg.pixels.length; i++) {
+    // Coge el color del píxel i de la imagen i1
+    color c1 = imgs[i1].pixels[i];
+    // Coge el color del píxel i de la imagen i2
+    color c2 = imgs[i2].pixels[i];
+    
+    // Interpola por separado cada componente de color (rojo, verde, azul)
+    // red(c1) obtiene la componente roja del color c1
+    float r = lerp(red(c1), red(c2), t);
+    // green(c1) obtiene la componente verde del color c1
+    float g = lerp(green(c1), green(c2), t);
+    // blue(c1) obtiene la componente azul del color c1
+    float b = lerp(blue(c1), blue(c2), t);
+    
+    // Crea un nuevo color a partir de las componentes interpoladas y lo asigna al píxel i
+    avgImg.pixels[i] = color(r, g, b);
+  }
+  
+  // Aplica los cambios realizados en el arreglo de píxeles a la imagen avgImg
+  avgImg.updatePixels();
+}
+
+// --- Leer valor del potenciómetro desde Arduino ---
+// Lee datos desde el puerto serial hasta encontrar saltos de línea y los convierte a número
+void readSerial() {
+  // Mientras el puerto exista y tenga bytes disponibles para leer...
+  while (myPort != null && myPort.available() > 0) {
+    // Lee una línea completa hasta '\n' (salto de línea)
+    String val = myPort.readStringUntil('\n');
+    if (val != null) {
+      // Elimina espacios y caracteres de control al inicio/final
+      val = trim(val);
+      // Si la cadena no está vacía, la convierte a float y la asigna a potValue
+      if (val.length() > 0) {
+        potValue = float(val);
+      }
+    }
   }
 }
 
-void mousePressed() {
-  if (circleOver) {
-    currentColor = circleColor;
+// --- Cargar todas las imágenes desde una carpeta ---
+// Devuelve un arreglo PImage[] con todas las imágenes JPG/PNG encontradas en data/folderName
+PImage[] loadImagesFromFolder(String folderName) {
+  // Construye la ruta absoluta a la carpeta dentro de la carpeta data del sketch
+  String path = sketchPath("data/" + folderName);
+  // Crea un objeto File apuntando a esa carpeta
+  File folder = new File(path);
+  // Lista todos los archivos dentro de la carpeta (puede devolver null si no existe)
+  File[] files = folder.listFiles();
+  
+  // Si files es null, la carpeta no existe o no tiene permisos -> avisar y devolver null
+  if (files == null) {
+    println("Carpeta no encontrada: " + path);
+    return null;
   }
-  if (rectOver) {
-    currentColor = rectColor;
+  
+  // Crea una lista dinámica para almacenar las PImage cargadas
+  ArrayList<PImage> loaded = new ArrayList<PImage>();
+  // Recorre cada archivo encontrado en la carpeta
+  for (File f : files) {
+    // Obtiene el nombre del archivo y lo convierte a minúsculas para comparar extensiones
+    String fname = f.getName().toLowerCase();
+    // Si termina en .jpg o .png, lo cargamos
+    if (fname.endsWith(".jpg") || fname.endsWith(".png")) {
+      // loadImage busca en data/folderName el archivo y devuelve un PImage
+      PImage img = loadImage(folderName + "/" + f.getName());
+      // Si la imagen se cargó correctamente, la agregamos a la lista
+      if (img != null) loaded.add(img);
+    }
   }
-}
-
-boolean overRect(int x, int y, int width, int height) {
-  if (mouseX >= x && mouseX <= x+width &&
-    mouseY >= y && mouseY <= y+height) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-boolean overCircle(int x, int y, int diameter) {
-  float disX = x - mouseX;
-  float disY = y - mouseY;
-  if (sqrt(sq(disX) + sq(disY)) < diameter/2 ) {
-    return true;
-  } else {
-    return false;
-  }
+  
+  // Convierte la ArrayList a un arreglo PImage[] y lo retorna
+  return loaded.toArray(new PImage[loaded.size()]);
 }
 ```
 <img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/sensor%20proximidad.jpg">
