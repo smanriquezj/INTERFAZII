@@ -830,3 +830,7 @@ PImage[] loadImagesFromFolder(String folderName) {
 }
 ```
 <img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/sensor%20proximidad.jpg">
+
+Nuestro trabajo trata del tránsito por el espacio, un espacio que remite a lo urbano pero se ve alterado e incómodo, utilizando una serie de imagenes en blanco y negro que cambian a medida que el espectador se acerca, por medio de un sensor de proximidad. 
+Nuestro trabajo es intercativo, permitiendo que el expectador sea participe de la obra y quien configure los espacios en cuanto a orden y duración.
+También nos basamos en Edward Hopper, en la forma como se utilizan los espacios y cómo el espectador se presenta ante estos.
