@@ -834,3 +834,268 @@ PImage[] loadImagesFromFolder(String folderName) {
 Nuestro trabajo trata del tránsito por el espacio, un espacio que remite a lo urbano pero se ve alterado e incómodo, utilizando una serie de imagenes en blanco y negro que cambian a medida que el espectador se acerca, por medio de un sensor de proximidad. 
 Nuestro trabajo es intercativo, permitiendo que el expectador sea participe de la obra y quien configure los espacios en cuanto a orden y duración.
 También nos basamos en Edward Hopper, en la forma como se utilizan los espacios y cómo el espectador se presenta ante estos.
+
+#### Pront a Gemini
+estoy haciendo un trabajo usando arduino y processing, donde quiero projectar imagenes en processing y que vayan cambiando con un sensor de proximidad conectado a arduino: un codigo de procesing parecido a este: // --- Librerías necesarias ---
+// Importa la librería de comunicación serial para conectar con Arduino
+import processing.serial.*;
+// Importa la clase File de Java para listar archivos y carpetas
+import java.io.File;
+
+// --- Comunicación serial con Arduino ---
+// Variable que contendrá el objeto de puerto serial (conexión con Arduino)
+Serial myPort;
+// Variable que guarda el valor leído del potenciómetro (0..1023)
+float potValue = 0;
+
+// --- Variables de imágenes ---
+// Arreglo dinámico que contendrá todas las imágenes cargadas desde la carpeta
+PImage[] imgs;
+// Imagen donde se almacenará el resultado del promedio/interpolación
+PImage avgImg;
+
+// --- Configuración inicial ---
+void setup() {
+  // Define el tamaño de la ventana de Processing (ancho, alto)
+  size(745, 1024);
+  
+  // Cargar imágenes desde carpeta "data/imagenes"
+  // Llama a la función que busca todas las imágenes dentro de esa carpeta
+  imgs = loadImagesFromFolder("imagenes");
+  // Imprime en la consola cuántas imágenes se cargaron (útil para debug)
+  println("Imágenes cargadas: " + imgs.length);
+  
+  // Redimensionar todas las imágenes al tamaño del lienzo para que coincidan pixel a pixel
+  for (int i = 0; i < imgs.length; i++) {
+    imgs[i].resize(width, height); // redimensiona cada imagen al ancho y alto de la ventana
+  }
+  
+  // Crea una imagen vacía del tamaño del lienzo donde guardaremos el promedio
+  avgImg = createImage(width, height, RGB);
+  
+  // Conectar con Arduino (ver lista de puertos)
+  // Muestra en consola la lista de puertos seriales disponibles (para identificar cuál usar)
+  printArray(Serial.list());
+  // Alternativa automática (comentada): abrir el primer puerto disponible a 9600 baudios
+  // myPort = new Serial(this, Serial.list()[0], 9600);
+  // Abrir un puerto específico (ejemplo para macOS). Ajusta según el puerto real en tu sistema.
+  myPort = new Serial(this, "/dev/cu.usbmodem1101", 9600);
+  // Nota: si no funciona el puerto, revisa la salida de printArray(Serial.list()) y usa el nombre correcto.
+}
+
+// --- Bucle principal ---
+// draw() se ejecuta continuamente (aprox. 60 veces por segundo)
+void draw() {
+  // Pinta el fondo de negro en cada frame
+  background(0);
+  // Llama a la función que lee datos desde el puerto serial (actualiza potValue)
+  readSerial();
+  
+  // Si no hay imágenes o sólo hay una, no hacemos nada (necesitamos al menos 2 para interpolar)
+  if (imgs == null || imgs.length < 2) return;
+  
+  // Mapear el valor del potenciómetro (0..1023) al rango de índices entre 0 y imgs.length-1
+  // Esto permite moverse a lo largo de la secuencia de imágenes
+  float mixValue = map(potValue, 0, 1023, 0, imgs.length - 1);
+  
+  // Calcular el promedio/interpolación entre las dos imágenes vecinas según mixValue
+  avgImagesWeighted(mixValue);
+  
+  // Mostrar la imagen promedio resultante en la pantalla, en la posición (0,0)
+  image(avgImg, 0, 0);
+  
+  // Mostrar texto con el valor actual del potenciómetro en la esquina inferior izquierda
+  fill(255); // color blanco para el texto
+  text("Valor pot: " + nf(potValue, 1, 0), 10, height - 10); // nf para formatear el número
+}
+
+// --- Función que calcula el promedio ponderado entre imágenes ---
+// mix es un valor flotante que indica la posición entre imágenes (ej. 2.3 -> entre img2 e img3)
+void avgImagesWeighted(float mix) {
+  // Accede al arreglo de píxeles de avgImg para poder modificarlos directamente
+  avgImg.loadPixels();
+  
+  // Asegura que mix esté dentro del rango válido [0, imgs.length - 1]
+  mix = constrain(mix, 0, imgs.length - 1);
+  
+  // i1 es el índice de la imagen "inferior" (por ejemplo 2 en 2.3)
+  int i1 = floor(mix);
+  // i2 es la imagen siguiente (i1 + 1), pero sin pasarse del último índice
+  int i2 = min(i1 + 1, imgs.length - 1);
+  // t es la fracción entre i1 e i2 (por ejemplo, 0.3 si mix es 2.3)
+  float t = mix - i1;
+  
+  // Cargar los píxeles de las dos imágenes que vamos a mezclar
+  imgs[i1].loadPixels();
+  imgs[i2].loadPixels();
+  
+  // Recorre todos los píxeles de la imagen objetivo
+  for (int i = 0; i < avgImg.pixels.length; i++) {
+    // Coge el color del píxel i de la imagen i1
+    color c1 = imgs[i1].pixels[i];
+    // Coge el color del píxel i de la imagen i2
+    color c2 = imgs[i2].pixels[i];
+    
+    // Interpola por separado cada componente de color (rojo, verde, azul)
+    // red(c1) obtiene la componente roja del color c1
+    float r = lerp(red(c1), red(c2), t);
+    // green(c1) obtiene la componente verde del color c1
+    float g = lerp(green(c1), green(c2), t);
+    // blue(c1) obtiene la componente azul del color c1
+    float b = lerp(blue(c1), blue(c2), t);
+    
+    // Crea un nuevo color a partir de las componentes interpoladas y lo asigna al píxel i
+    avgImg.pixels[i] = color(r, g, b);
+  }
+  
+  // Aplica los cambios realizados en el arreglo de píxeles a la imagen avgImg
+  avgImg.updatePixels();
+}
+
+// --- Leer valor del potenciómetro desde Arduino ---
+// Lee datos desde el puerto serial hasta encontrar saltos de línea y los convierte a número
+void readSerial() {
+  // Mientras el puerto exista y tenga bytes disponibles para leer...
+  while (myPort != null && myPort.available() > 0) {
+    // Lee una línea completa hasta '\n' (salto de línea)
+    String val = myPort.readStringUntil('\n');
+    if (val != null) {
+      // Elimina espacios y caracteres de control al inicio/final
+      val = trim(val);
+      // Si la cadena no está vacía, la convierte a float y la asigna a potValue
+      if (val.length() > 0) {
+        potValue = float(val);
+      }
+    }
+  }
+}
+
+// --- Cargar todas las imágenes desde una carpeta ---
+// Devuelve un arreglo PImage[] con todas las imágenes JPG/PNG encontradas en data/folderName
+PImage[] loadImagesFromFolder(String folderName) {
+  // Construye la ruta absoluta a la carpeta dentro de la carpeta data del sketch
+  String path = sketchPath("data/" + folderName);
+  // Crea un objeto File apuntando a esa carpeta
+  File folder = new File(path);
+  // Lista todos los archivos dentro de la carpeta (puede devolver null si no existe)
+  File[] files = folder.listFiles();
+  
+  // Si files es null, la carpeta no existe o no tiene permisos -> avisar y devolver null
+  if (files == null) {
+    println("Carpeta no encontrada: " + path);
+    return null;
+  }
+  
+  // Crea una lista dinámica para almacenar las PImage cargadas
+  ArrayList<PImage> loaded = new ArrayList<PImage>();
+  // Recorre cada archivo encontrado en la carpeta
+  for (File f : files) {
+    // Obtiene el nombre del archivo y lo convierte a minúsculas para comparar extensiones
+    String fname = f.getName().toLowerCase();
+    // Si termina en .jpg o .png, lo cargamos
+    if (fname.endsWith(".jpg") || fname.endsWith(".png")) {
+      // loadImage busca en data/folderName el archivo y devuelve un PImage
+      PImage img = loadImage(folderName + "/" + f.getName());
+      // Si la imagen se cargó correctamente, la agregamos a la lista
+      if (img != null) loaded.add(img);
+    }
+  }
+  
+  // Convierte la ArrayList a un arreglo PImage[] y lo retorna
+  return loaded.toArray(new PImage[loaded.size()]);
+}
+#### respuesta
+¡Genial! Entiendo que estás adaptando este código de Processing para usar un sensor de proximidad con Arduino en lugar del potenciómetro, con el objetivo de cambiar las imágenes proyectadas.
+Para hacer este cambio, necesitas modificar tanto el código de Arduino como el código de Processing.
+Aquí tienes el código de Arduino necesario y las modificaciones clave en el código de Processing:
+⚙️ Código de Arduino (para Sensor de Proximidad)
+El código de Arduino debe leer la distancia del sensor y mapearla al rango de valores (0 a 1023) que el código de Processing espera (similar al potenciómetro original), o al rango de índices de tus imágenes.
+Usaremos un sensor popular como el HC-SR04 (ultrasónico) como ejemplo.
+Arduino (Ejemplo para HC-SR04)
+
+```js
+// Pines del sensor ultrasónico HC-SR04
+const int trigPin = 9; // Pin Trig conectado al pin digital 9 de Arduino
+const int echoPin = 10; // Pin Echo conectado al pin digital 10 de Arduino
+
+// Variables para la medición de distancia
+long duration; // Variable para almacenar la duración del pulso
+int distance_cm; // Variable para almacenar la distancia en centímetros
+const int maxDistance = 200; // Distancia máxima que quieres medir (en cm)
+const int minDistance = 5; // Distancia mínima que quieres medir (en cm)
+
+void setup() {
+  // Inicializa la comunicación serial a la misma velocidad que Processing
+  Serial.begin(9600);
+  
+  // Configura los pines del sensor
+  pinMode(trigPin, OUTPUT); // Pin de activación como salida
+  pinMode(echoPin, INPUT); // Pin de eco como entrada
+}
+
+void loop() {
+  // 1. Limpia el pin Trig (asegura que está bajo)
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  
+  // 2. Envía un pulso de 10 microsegundos para activar el sensor
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  
+  // 3. Lee el pin Echo, devuelve la duración del viaje del sonido
+  duration = pulseIn(echoPin, HIGH);
+  
+  // 4. Calcula la distancia
+  // Velocidad del sonido es 343 m/s o 0.0343 cm/µs. 
+  // La distancia es (duración * 0.0343) / 2 (ida y vuelta)
+  distance_cm = duration * 0.0343 / 2;
+  
+  // 5. Mapea la distancia al rango de valores que Processing espera
+  // El código de Processing espera un valor entre 0 y 1023 (del potValue original).
+  // Mapeamos un rango útil de distancia (ej: 5cm a 200cm) a 0 a 1023.
+  // Notar que 'constrain' invierte el rango para que la cercanía (5cm) sea 1023 y la lejanía (200cm) sea 0, 
+  // lo cual puede ser más intuitivo (más cerca -> siguiente imagen).
+  int mappedValue = map(constrain(distance_cm, minDistance, maxDistance), minDistance, maxDistance, 1023, 0); 
+  
+  // 6. Envía el valor mapeado por Serial, seguido de un salto de línea
+  Serial.println(mappedValue);
+  
+  // Pequeña pausa para evitar enviar datos demasiado rápido
+  delay(50); 
+}
+```
+
+💻 Modificaciones en el Código de Processing
+El código de Processing que proporcionaste está muy bien estructurado para recibir un valor mapeado (el potValue) y usarlo para interpolar entre imágenes. Solo necesitas hacer un pequeño ajuste en la lógica de mapeo si quieres un control más directo sobre qué valor del sensor corresponde a qué imagen.
+La clave está en cómo mapeas tu valor entrante (potValue, que ahora será la distancia mapeada de Arduino) al rango de índices de imágenes.
+Ajuste en la función draw()
+En tu código actual, esta línea es la importante:
+```
+// Mapear el valor del potenciómetro (0..1023) al rango de índices entre 0 y imgs.length-1
+float mixValue = map(potValue, 0, 1023, 0, imgs.length - 1);
+```
+¡No necesitas cambiar nada más en Processing! 🎉
+El código de Arduino ya está enviando un valor entre 0 y 1023, que simula el potenciómetro. Por lo tanto, el código de Processing lo recibe como potValue y lo usa para calcular mixValue y la interpolación de manera perfecta.
+Resumen de las Modificaciones en Processing:
+No se necesita modificar el tipo de variable potValue (sigue siendo float).
+No se necesita modificar la función readSerial() (sigue esperando un número seguido de \n).
+No se necesita modificar la función draw() (el mapeo de potValue a mixValue funciona igual).
+El único ajuste que podrías necesitar es cambiar el puerto serial en setup() si el de Arduino es diferente al que tenías para el potenciómetro:
+```
+// Abrir un puerto específico (ejemplo para macOS). Ajusta según el puerto real en tu sistema.
+// **¡REVISA ESTA LÍNEA Y AJÚSTALA!**
+myPort = new Serial(this, "/dev/cu.usbmodem1101", 9600); 
+```
+
+📝 Resumen del Flujo de Trabajo
+Arduino:
+Mide la distancia (ej: 5 cm a 200 cm).
+Invierte y Mapea esa distancia a un valor de 0 a 1023.
+Envía el valor 1023 (cerca) o 0 (lejos) por el Serial.
+Processing:
+Recibe el valor entre 0 y 1023 en potValue.
+Mapea potValue al rango de índices de tus imágenes (0 a imgs.length - 1) en la variable mixValue.
+Usa mixValue para interpolar entre la imagen i1 y i2.
+Este enfoque utiliza la estructura existente en Processing y solo reemplaza la fuente del valor de control.
+¿Te gustaría que te ayudara a depurar el puerto serial si tienes problemas de conexión entre Arduino y Processing?
