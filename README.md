@@ -607,7 +607,7 @@ void calcAverage(float t) {
 }
 }
 ```
-### Sensor de proximidad
+### Ejercicio nota 2: Sensor de proximidad
 #### Arduino
 ```js
 // Pines del sensor ultrasónico HC-SR04
