@@ -612,6 +612,11 @@ Nuestro trabajo trata del tránsito por el espacio, un espacio que remite a lo u
 Nuestro trabajo es intercativo, permitiendo que el expectador sea participe de la obra y quien configure los espacios en cuanto a orden y duración.
 También nos basamos en Edward Hopper, en la forma como se utilizan los espacios y cómo el espectador se presenta ante estos.
 
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/boceto%201.png">
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/boceto%202.png">
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/boceto%203.png">
+<img src= "https://github.com/smanriquezj/INTERFAZII/blob/main/img/boceto%204.png">
+
 #### Arduino
 ```js
 // Pines del sensor ultrasónico HC-SR04
@@ -1099,3 +1104,61 @@ Mapea potValue al rango de índices de tus imágenes (0 a imgs.length - 1) en la
 Usa mixValue para interpolar entre la imagen i1 y i2.
 Este enfoque utiliza la estructura existente en Processing y solo reemplaza la fuente del valor de control.
 ¿Te gustaría que te ayudara a depurar el puerto serial si tienes problemas de conexión entre Arduino y Processing?
+
+#### Segundo pront
+como armo el arduino, me haces una explicacion detallada
+#### Segunda respuesta
+¡Por supuesto! Te explicaré detalladamente cómo montar el circuito de Arduino para usar el sensor ultrasónico HC-SR04 (sensor de proximidad) con el código que te proporcioné.
+🛠️ Materiales Necesarios
+Necesitarás los siguientes componentes:
+Arduino Uno (o similar).
+Sensor Ultrasónico HC-SR04.
+Protoboard (placa de pruebas) pequeña.
+Cables Jumper (machos-machos).
+4 Resistencias (opcionales pero recomendadas, solo si quieres usar divisores de tensión para proteger el pin Echo, aunque en muchos casos funciona sin ellas, aquí las omitiremos por simplicidad).
+🔌 Diagrama de Conexión (Cableado)
+El sensor HC-SR04 tiene 4 pines. Debes conectarlos a tu placa Arduino de la siguiente manera, basándote en la configuración de pines definida en el código de Arduino:
+
+Pin del Sensor HC-SR04 Conexión a Arduino Descripción
+VCC (Voltaje) 5V Alimentación del sensor.
+GND (Tierra) GND Conexión a tierra.
+Trig (Trigger) Digital Pin 9 Envía el pulso ultrasónico.
+Echo (Receptor) Digital Pin 10 Recibe el pulso reflejado (mide la duración).
+
+Pasos Detallados para el Cableado:
+Alimentación (VCC y GND):
+Conecta el pin VCC del sensor al pin 5V del Arduino.
+Conecta el pin GND del sensor a cualquiera de los pines GND del Arduino.
+Pines de Señal (Trig y Echo):
+Conecta el pin Trig (Trigger) del sensor al Pin Digital 9 del Arduino.
+Conecta el pin Echo (Receptor) del sensor al Pin Digital 10 del Arduino.
+💡 Nota Importante: El sensor HC-SR04 funciona con 5V, y sus pines de señal también operan a 5V, lo cual es compatible con los pines de entrada/salida de la mayoría de las placas Arduino Uno/Nano.
+🖥️ Carga del Código y Prueba
+Una vez que el cableado esté listo, sigue estos pasos:
+Paso 1: Copiar y Subir el Código
+Abre el IDE de Arduino.
+Copia y pega el código de Arduino que te proporcioné anteriormente (el que lee el HC-SR04 y envía el valor mapeado).
+Asegúrate de que la placa Arduino correcta y el puerto serial correcto estén seleccionados en el menú Herramientas.
+Haz clic en el botón Subir (la flecha) para cargar el código a tu placa Arduino.
+Paso 2: Verificar la Salida Serial
+Una vez subido el código, abre el Monitor Serial (el icono de la lupa en la esquina superior derecha del IDE de Arduino).
+Asegúrate de que la velocidad de baudios esté configurada a 9600 (debe coincidir con la línea Serial.begin(9600); en el código).
+Deberías ver una serie de números apareciendo en el monitor.
+Si acercas tu mano al sensor (dentro de 5 cm), el valor debería acercarse a 1023.
+Si alejas tu mano (más allá de 200 cm), el valor debería acercarse a 0.
+Este valor (entre 0 y 1023) es el que Processing usará para cambiar las imágenes.
+Paso 3: Conectar a Processing
+1. Cierra el Monitor Serial de Arduino. (Es crucial que solo un programa acceda al puerto serial a la vez. Si Arduino tiene el Monitor abierto, Processing no podrá conectarse).
+2. Abre tu sketch de Processing.
+3. Identifica el puerto: Revisa la lista de puertos en la consola de Processing o en el IDE de Arduino.
+4. Ajusta el puerto en Processing: Modifica la línea en setup() de Processing con el nombre de tu puerto real:
+```
+// Revisa la salida de printArray(Serial.list()) en la consola de Processing
+// y ajusta el nombre del puerto aquí (ejemplo para Windows o Linux/macOS)
+myPort = new Serial(this, "COM3", 9600); // Ejemplo Windows
+// O: myPort = new Serial(this, "/dev/ttyACM0", 9600); // Ejemplo Linux
+// O: myPort = new Serial(this, "/dev/cu.usbmodem1101", 9600); // Ejemplo macOS
+```
+5. Ejecuta el sketch de Processing. Al acercar o alejar tu mano del sensor HC-SR04, las imágenes en Processing deberían interpolarse y cambiar.
+
+¿Quieres que te muestre un ejemplo de cómo se vería la salida de printArray(Serial.list()) para ayudarte a identificar el nombre de tu puerto?
