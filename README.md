@@ -607,3 +607,147 @@ void calcAverage(float t) {
 }
 }
 ```
+### Sensor de proximidad
+#### Arduino
+```js
+// Pines del sensor ultrasónico HC-SR04
+const int trigPin = 9; // Pin Trig conectado al pin digital 9 de Arduino
+const int echoPin = 10; // Pin Echo conectado al pin digital 10 de Arduino
+
+// Variables para la medición de distancia
+long duration; // Variable para almacenar la duración del pulso
+int distance_cm; // Variable para almacenar la distancia en centímetros
+const int maxDistance = 200; // Distancia máxima que quieres medir (en cm)
+const int minDistance = 5;   // Distancia mínima que quieres medir (en cm)
+
+void setup() {
+  // Inicializa la comunicación serial a la misma velocidad que Processing
+  Serial.begin(9600);
+  
+  // Configura los pines del sensor
+  pinMode(trigPin, OUTPUT); // Pin de activación como salida
+  pinMode(echoPin, INPUT);  // Pin de eco como entrada
+}
+
+void loop() {
+  // 1. Limpia el pin Trig (asegura que está bajo)
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  
+  // 2. Envía un pulso de 10 microsegundos para activar el sensor
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  
+  // 3. Lee el pin Echo, devuelve la duración del viaje del sonido
+  duration = pulseIn(echoPin, HIGH);
+  
+  // 4. Calcula la distancia
+  // Velocidad del sonido es 343 m/s o 0.0343 cm/µs. 
+  // La distancia es (duración * 0.0343) / 2 (ida y vuelta)
+  distance_cm = duration * 0.0343 / 2;
+  
+  // 5. Mapea la distancia al rango de valores que Processing espera
+  // El código de Processing espera un valor entre 0 y 1023 (del potValue original).
+  // Mapeamos un rango útil de distancia (ej: 5cm a 200cm) a 0 a 1023.
+  // Notar que 'constrain' invierte el rango para que la cercanía (5cm) sea 1023 y la lejanía (200cm) sea 0, 
+  // lo cual puede ser más intuitivo (más cerca -> siguiente imagen).
+  int mappedValue = map(constrain(distance_cm, minDistance, maxDistance), minDistance, maxDistance, 1023, 0); 
+  
+  // 6. Envía el valor mapeado por Serial, seguido de un salto de línea
+  Serial.println(mappedValue);
+  
+  // Pequeña pausa para evitar enviar datos demasiado rápido
+  delay(50); 
+}
+```
+### Processing
+```js
+int rectX, rectY;      // Position of square button
+int circleX, circleY;  // Position of circle button
+int rectSize = 30;     // Diameter of rect
+int circleSize = 30;   // Diameter of circle
+color rectColor, circleColor, baseColor;
+color rectHighlight, circleHighlight;
+color currentColor;
+boolean rectOver = false;
+boolean circleOver = false;
+PImage img; // Declare variable 'img'.
+
+void setup() {
+  size(700, 525);
+  img = loadImage("base.jpeg");
+  rectColor = color(0); //color cuadrado boton
+  rectHighlight = color(51); //Color de cuadrado apretado
+  circleColor = color(255); //lo mismo circulo
+  circleHighlight = color(204); // lo mismo circulo
+  //baseColor = color(102);
+  //currentColor = baseColor;
+  circleX = width/2+circleSize/2+150;// posicion circulo X
+  circleY = height/2;
+  rectX = width/2-rectSize-180;
+  rectY = height/2-rectSize/2+20;
+  ellipseMode(CENTER);
+}
+
+void draw() {
+  update(mouseX, mouseY);
+  background(img);
+
+  if (rectOver) {
+    fill(rectHighlight);
+  } else {
+    fill(rectColor);
+  }
+  stroke(255);
+  rect(rectX, rectY, rectSize, rectSize);
+
+  if (circleOver) {
+    fill(circleHighlight);
+  } else {
+    fill(circleColor);
+  }
+  stroke(0);
+  ellipse(circleX, circleY, circleSize, circleSize);
+}
+
+void update(int x, int y) {
+  if ( overCircle(circleX, circleY, circleSize) ) {
+    circleOver = true;
+    rectOver = false;
+  } else if ( overRect(rectX, rectY, rectSize, rectSize) ) {
+    rectOver = true;
+    circleOver = false;
+  } else {
+    circleOver = rectOver = false;
+  }
+}
+
+void mousePressed() {
+  if (circleOver) {
+    currentColor = circleColor;
+  }
+  if (rectOver) {
+    currentColor = rectColor;
+  }
+}
+
+boolean overRect(int x, int y, int width, int height) {
+  if (mouseX >= x && mouseX <= x+width &&
+    mouseY >= y && mouseY <= y+height) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+boolean overCircle(int x, int y, int diameter) {
+  float disX = x - mouseX;
+  float disY = y - mouseY;
+  if (sqrt(sq(disX) + sq(disY)) < diameter/2 ) {
+    return true;
+  } else {
+    return false;
+  }
+}
+```
