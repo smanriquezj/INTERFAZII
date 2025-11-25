@@ -1162,3 +1162,29 @@ myPort = new Serial(this, "COM3", 9600); // Ejemplo Windows
 5. Ejecuta el sketch de Processing. Al acercar o alejar tu mano del sensor HC-SR04, las imágenes en Processing deberían interpolarse y cambiar.
 
 ¿Quieres que te muestre un ejemplo de cómo se vería la salida de printArray(Serial.list()) para ayudarte a identificar el nombre de tu puerto?
+
+### Statement Examen
+
+Espacios
+Descripción:  Instalación interactiva, con uso de sensores de proximidad, la obra se activa con eluso del cuerpo del espectador, generando un cambio aleatorio de paisajes, creando 
+una ilusión de movimiento o tránsito al alejarse o acercarse el cuerpo, de modo que enfatiza la sensación de traslado. 
+Materialidad: computador, Arduino, sensor de proximidad, proyector. Proponemos un  entre lo análogo y lo digital, empleando los nuevos medios 
+para transformar imágenes obtenidas con procesos tradicionales (monotipia/grabado/tinta) 
+trabajando por medio de los espacios y la distorsión de los mismos. Imprimiendo 
+digitalmente, reinterpretando la imagen, Imprimir manualmente, escanear, proyectar en lo 
+cual genera un cambio, traslado y transformación de la imagen que se reitera en el proceso 
+permanente de desplazamiento y traslado. 
+Nuestra investigación parte de cuestionar el sentido tradicional del Hogar y los espacios, en 
+especial lo urbano, cotidiano y de tráfico, en el que los individuos habitan. Nos interesa 
+tensionar lo cotidiano, de pertenencia/calidez, trayendo lo a lo 'Extraño’ incómodo 
+manteniendo el imaginario de lo conocido, generando atmósferas inquietantes. 
+referentes: Nos basamos en The Architectural uncanny de Anthony Vidler, historiador de Arquitectura y 
+en la metáfora de lo 'no-familiar' que surge de la ambigüedad entre lo familiar y lo 
+desconocido, cuando lo familiar se vuelve Extraño. 
+La forma en que son tratados los espacios puede transformar/condicionar cómo las 
+personas se perciben corpórea y psicológicamente. 
+De Hopper, tomamos la forma de trabajar el espacio, alienandolo, con atmósferas cargadas 
+y llenas de silencio y extrañeza, y la postura que toman las personas en sus cuadros de 
+Habitante, cómo observador que sólo permanece en el lugar sin mayor incidencia. En sus 
+pinturas aborda la soledad y el aislamiento, que sugieren una narrativa de cosas que 
+pudieron (o no) haber pasado en los espacios. 
